@@ -1,0 +1,30 @@
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: finance_db_dev
+    ports:
+      - "5433:5432"  # Différent port pour éviter les conflits
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+
+  redis:
+    ports:
+      - "6380:6379"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    volumes:
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
+      - ./logs:/app/logs
+
+volumes:
+  postgres_data_dev:

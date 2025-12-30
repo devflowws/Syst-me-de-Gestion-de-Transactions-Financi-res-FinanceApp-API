@@ -1,0 +1,84 @@
+finance-app/
+├── pom.xml
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── financeapp/
+│   │   │           ├── FinanceAppApplication.java
+│   │   │           ├── config/
+│   │   │           │   ├── SecurityConfig.java
+│   │   │           │   ├── SwaggerConfig.java
+│   │   │           │   └── DatabaseConfig.java
+│   │   │           ├── controller/
+│   │   │           │   ├── UserController.java
+│   │   │           │   ├── TransactionController.java
+│   │   │           │   ├── AccountController.java
+│   │   │           │   └── AuthController.java
+│   │   │           ├── dto/
+│   │   │           │   ├── UserDTO.java
+│   │   │           │   ├── TransactionDTO.java
+│   │   │           │   ├── AccountDTO.java
+│   │   │           │   ├── LoginRequest.java
+│   │   │           │   └── ApiResponse.java
+│   │   │           ├── entity/
+│   │   │           │   ├── User.java
+│   │   │           │   ├── Transaction.java
+│   │   │           │   ├── Account.java
+│   │   │           │   └── BaseEntity.java
+│   │   │           ├── repository/
+│   │   │           │   ├── UserRepository.java
+│   │   │           │   ├── TransactionRepository.java
+│   │   │           │   └── AccountRepository.java
+│   │   │           ├── service/
+│   │   │           │   ├── UserService.java
+│   │   │           │   ├── TransactionService.java
+│   │   │           │   ├── AccountService.java
+│   │   │           │   ├── AuthService.java
+│   │   │           │   └── impl/
+│   │   │           │       ├── UserServiceImpl.java
+│   │   │           │       ├── TransactionServiceImpl.java
+│   │   │           │       ├── AccountServiceImpl.java
+│   │   │           │       └── AuthServiceImpl.java
+│   │   │           ├── exception/
+│   │   │           │   ├── GlobalExceptionHandler.java
+│   │   │           │   ├── ResourceNotFoundException.java
+│   │   │           │   └── BusinessException.java
+│   │   │           └── util/
+│   │   │               ├── JwtUtil.java
+│   │   │               ├── ValidationUtil.java
+│   │   │               └── Constants.java
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       ├── application-dev.properties
+│   │       ├── application-prod.properties
+│   │       └── data.sql
+│   └── test/
+│       ├── java/
+│       │   └── com/
+│       │       └── financeapp/
+│       │           ├── FinanceAppApplicationTests.java
+│       │           ├── controller/
+│       │           │   ├── UserControllerTest.java
+│       │           │   ├── TransactionControllerTest.java
+│       │           │   └── AuthControllerTest.java
+│       │           ├── service/
+│       │           │   ├── UserServiceTest.java
+│       │           │   ├── TransactionServiceTest.java
+│       │           │   └── AuthServiceTest.java
+│       │           └── repository/
+│       │               ├── UserRepositoryTest.java
+│       │               ├── TransactionRepositoryTest.java
+│       │               └── AccountRepositoryTest.java
+│       └── resources/
+│           └── application-test.properties
+├── Dockerfile
+├── docker-compose.yml
+├── README.md
+└── .gitignore
+
+
+
+
+
+

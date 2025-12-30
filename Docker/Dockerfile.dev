@@ -1,0 +1,23 @@
+# Dockerfile.dev
+FROM maven:3.9-eclipse-temurin-17 AS development
+WORKDIR /app
+
+# Install nécessaire pour le hot reload
+RUN apt-get update && apt-get install -y curl && \
+    curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g nodemon
+
+# Copier les fichiers
+COPY pom.xml .
+COPY src ./src
+
+# Installer les dépendances
+RUN mvn dependency:go-offline
+
+# Exposer les ports
+EXPOSE 8080
+EXPOSE 5005
+
+# Commande pour le développement
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005'"]
