@@ -147,7 +147,7 @@ public class Transaction {
     }
     
     public enum TransactionType {
-        TRANSFER, DEPOSIT, WITHDRAWAL, PAYMENT
+        TRANSFER, DEPOSIT, WITHDRAWAL, PAYMENT, TRANSFER_EXTERNAL
     }
     
     public enum TransactionStatus {

@@ -4,6 +4,7 @@ import com.financeapp.dto.AuthRequest;
 import com.financeapp.dto.AuthResponse;
 import com.financeapp.entity.User;
 import com.financeapp.repository.UserRepository;
+import com.financeapp.util.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     
     @Override
     public AuthResponse authenticate(AuthRequest authRequest) {
+        // Authentifier l'utilisateur
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 authRequest.getEmail(),
@@ -34,45 +36,42 @@ public class AuthServiceImpl implements AuthService {
             )
         );
         
+        // Définir l'authentification dans le contexte
         SecurityContextHolder.getContext().setAuthentication(authentication);
         
+        // Récupérer l'utilisateur
         User user = userRepository.findByEmail(authRequest.getEmail())
             .orElseThrow(() -> new RuntimeException("User not found"));
         
+        // Générer le token JWT
         String token = jwtUtil.generateToken(user.getEmail());
         
+        // Créer la réponse
         AuthResponse response = new AuthResponse();
         response.setToken(token);
-        response.setTokenType("Bearer");
-        response.setUserId(user.getId());
-        response.setEmail(user.getEmail());
+        
+        // Créer le UserDTO
+        AuthResponse.UserDTO userDTO = new AuthResponse.UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setRole(user.getRole().name());  
+        userDTO.setStatus(user.getStatus().name()); 
+        
+        response.setUser(userDTO);
+        
         return response;
     }
     
     @Override
     public void logout(String token) {
-        // In a real application, you might want to blacklist the token
+        // token invalidation can be handled here if token storage is implemented
         SecurityContextHolder.clearContext();
     }
     
     @Override
     public boolean validateToken(String token) {
         return jwtUtil.validateToken(token);
-    }
-
-    private static class JwtUtil {
-
-        public JwtUtil() {
-        }
-
-        public boolean validateToken(String token) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'validateToken'");
-        }
-
-        public String generateToken(String email) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'generateToken'");
-        }
     }
 }

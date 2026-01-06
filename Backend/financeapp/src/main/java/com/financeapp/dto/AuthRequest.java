@@ -1,120 +1,68 @@
 package com.financeapp.dto;
 
-import com.financeapp.entity.User;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class AuthRequest {
     
-    private String token;
-    private UserDTO user;
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    private String email;
     
-    // Constructeur
+    @NotBlank(message = "Password is required")
+    private String password;
+    
+    private String firstName;
+    private String lastName;
+    
+    // Constructeurs
     public AuthRequest() {
     }
     
-    public AuthRequest(String token, UserDTO user) {
-        this.token = token;
-        this.user = user;
+    // Pour login
+    public AuthRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
     
-    // Getters
-    public String getToken() {
-        return token;
+    // Pour register
+    public AuthRequest(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
     
-    public UserDTO getUser() {
-        return user;
-    }
-    
-    // Setters
-    public void setToken(String token) {
-        this.token = token;
-    }
-    
-    public void setUser(UserDTO user) {
-        this.user = user;
-    }
-    
-    // Classe interne UserDTO
-    public static class UserDTO {
-        private String id;
-        private String email;
-        private String firstName;
-        private String lastName;
-        private User.Role role;
-        
-        // Constructeur
-        public UserDTO() {
-        }
-        
-        public UserDTO(String id, String email, String firstName, String lastName, User.Role role) {
-            this.id = id;
-            this.email = email;
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.role = role;
-        }
-        
-        // Getters
-        public String getId() {
-            return id;
-        }
-        
-        public String getEmail() {
-            return email;
-        }
-        
-        public String getFirstName() {
-            return firstName;
-        }
-        
-        public String getLastName() {
-            return lastName;
-        }
-        
-        public User.Role getRole() {
-            return role;
-        }
-        
-        // Setters
-        public void setId(String id) {
-            this.id = id;
-        }
-        
-        public void setEmail(String email) {
-            this.email = email;
-        }
-        
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-        
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-        
-        public void setRole(User.Role role) {
-            this.role = role;
-        }
-        
-        // Méthode de conversion
-        public static UserDTO fromUser(User user) {
-            UserDTO dto = new UserDTO();
-            dto.setId(user.getId());
-            dto.setEmail(user.getEmail());
-            dto.setFirstName(user.getFirstName());
-            dto.setLastName(user.getLastName());
-            dto.setRole(user.getRole());
-            return dto;
-        }
-    }
-
+    // Getters et Setters
     public String getEmail() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEmail'");
+        return email;
     }
-
-    public CharSequence getPassword() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPassword'");
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    public String getFirstName() {
+        return firstName;
+    }
+    
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    
+    public String getLastName() {
+        return lastName;
+    }
+    
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

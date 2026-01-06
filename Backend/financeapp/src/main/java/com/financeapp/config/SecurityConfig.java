@@ -3,7 +3,6 @@ package com.financeapp.config;
 import com.financeapp.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -29,22 +28,35 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
     
-    // SUPPRIME le constructeur et toutes les injections
-    
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             AuthenticationProvider authenticationProvider,
-            @Lazy JwtAuthenticationFilter jwtAuthFilter) throws Exception {
+            JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+               
+                .requestMatchers("/auth/**").permitAll()          
+                .requestMatchers("/public/**").permitAll()        
+                .requestMatchers("/test/**").permitAll()          
+                .requestMatchers("/actuator/**").permitAll()      
+                .requestMatchers("/health").permitAll()
+                .requestMatchers("/ping").permitAll()
+                .requestMatchers("/status").permitAll()
+                .requestMatchers("/").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/error").permitAll()
+                
+                // PROTECTED ENDPOINTS - SANS /api !
+                .requestMatchers("/users/**").authenticated()       
+                .requestMatchers("/accounts/**").authenticated()    
+                .requestMatchers("/transactions/**").authenticated() 
+                .requestMatchers("/admin/**").hasRole("ADMIN")  
+                
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> 
@@ -60,7 +72,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:3000", 
+            "http://localhost:4200",
+            "http://localhost:8081"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

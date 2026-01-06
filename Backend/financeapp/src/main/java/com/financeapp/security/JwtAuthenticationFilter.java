@@ -12,9 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+import java.io.IOException; 
 
-// REMOVE @Component annotation since we're creating bean manually
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     private final JwtService jwtService;
@@ -42,21 +41,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
-        
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+        try {
+            userEmail = jwtService.extractUsername(jwt);
             
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (Exception e) {
+            // Log l'erreur silencieusement pour les endpoints publics
+            logger.error("JWT error: " + e.getMessage());
         }
+        
         filterChain.doFilter(request, response);
+    }
+    
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // NE PAS appliquer le filtre JWT sur ces chemins
+        String path = request.getServletPath();
+        
+        return path.startsWith("/api/auth/") ||
+               path.startsWith("/api/public/") ||
+               path.startsWith("/api/test/") ||
+               path.startsWith("/api/actuator/") ||
+               path.startsWith("/h2-console/") ||
+               path.startsWith("/swagger-ui/") ||
+               path.startsWith("/v3/api-docs/") ||
+               path.equals("/error") ||
+               path.equals("/health") ||
+               path.equals("/ping");
     }
 }

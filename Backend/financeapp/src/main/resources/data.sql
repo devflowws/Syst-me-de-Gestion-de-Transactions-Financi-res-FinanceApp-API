@@ -1,73 +1,28 @@
 -- data.sql
--- Données initiales pour l'application H2
+-- Données initiales pour PostgreSQL avec UUID
 
--- Supprimer les tables si elles existent (pour un démarrage propre)
-DROP TABLE IF EXISTS transactions;
-DROP TABLE IF EXISTS accounts;
-DROP TABLE IF EXISTS users;
-
--- Créer la table users si elle n'existe pas
-CREATE TABLE IF NOT EXISTS users (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    first_name VARCHAR(255),
-    last_name VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255)
-);
-
--- Insérer des utilisateurs de test (mot de passe: password123)
--- Note: Le mot de passe hashé est pour 'password123'
-MERGE INTO users (id, email, password, first_name, last_name, created_at, updated_at, created_by, updated_by) 
-KEY(email) 
+-- Insérer des utilisateurs
+INSERT INTO users (id, email, password, first_name, last_name, phone, role, status, created_at, updated_at) 
 VALUES 
-(1, 'admin@financeapp.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTV6UiC', 'Admin', 'User', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system', 'system'),
-(2, 'user@financeapp.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTV6UiC', 'John', 'Doe', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system', 'system');
-
--- Créer la table accounts si elle n'existe pas
-CREATE TABLE IF NOT EXISTS accounts (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    account_number VARCHAR(50) UNIQUE NOT NULL,
-    account_name VARCHAR(255) NOT NULL,
-    balance DECIMAL(15, 2) DEFAULT 0.00,
-    user_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+('11111111-1111-1111-1111-111111111111', 'john.doe@email.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTV6UiC', 'John', 'Doe', '+33612345678', 'ROLE_USER', 'ACTIVE', NOW(), NOW()),
+('22222222-2222-2222-2222-222222222222', 'jane.smith@email.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTV6UiC', 'Jane', 'Smith', '+33687654321', 'ROLE_USER', 'ACTIVE', NOW(), NOW()),
+('33333333-3333-3333-3333-333333333333', 'admin@finance.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTV6UiC', 'Admin', 'System', '+33611223344', 'ROLE_ADMIN', 'ACTIVE', NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;
 
 -- Insérer des comptes
-MERGE INTO accounts (id, account_number, account_name, balance, user_id, created_at, updated_at, created_by, updated_by) 
-KEY(account_number) 
-VALUES
-(1, 'ACC001', 'Compte Courant Principal', 10000.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system', 'system'),
-(2, 'ACC002', 'Compte Épargne', 5000.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system', 'system'),
-(3, 'ACC003', 'Compte Personnel', 3000.00, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system', 'system');
-
--- Créer la table transactions si elle n'existe pas
-CREATE TABLE IF NOT EXISTS transactions (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    amount DECIMAL(15, 2) NOT NULL,
-    type VARCHAR(50) NOT NULL,
-    description VARCHAR(500),
-    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    account_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
-);
+INSERT INTO accounts (id, account_number, type, balance, currency, status, created_date, user_id, overdraft_limit, daily_limit) 
+VALUES 
+('44444444-4444-4444-4444-444444444444', 'ACC001001', 'CHECKING', 5000.00, 'EUR', 'ACTIVE', '2024-01-01', '11111111-1111-1111-1111-111111111111', 1000.00, 2000.00),
+('55555555-5555-5555-5555-555555555555', 'ACC001002', 'SAVINGS', 15000.00, 'EUR', 'ACTIVE', '2024-01-01', '11111111-1111-1111-1111-111111111111', 0.00, 5000.00),
+('66666666-6666-6666-6666-666666666666', 'ACC002001', 'CHECKING', 3000.00, 'EUR', 'ACTIVE', '2024-01-02', '22222222-2222-2222-2222-222222222222', 500.00, 1500.00),
+('77777777-7777-7777-7777-777777777777', 'ACC003001', 'BUSINESS', 50000.00, 'USD', 'ACTIVE', '2024-01-03', '33333333-3333-3333-3333-333333333333', 5000.00, 10000.00)
+ON CONFLICT (id) DO NOTHING;
 
 -- Insérer des transactions
-MERGE INTO transactions (id, amount, type, description, transaction_date, account_id, created_at, updated_at, created_by, updated_by) 
-KEY(id) 
-VALUES
-(1, 1000.00, 'DEPOSIT', 'Dépôt initial', DATEADD('DAY', -30, CURRENT_TIMESTAMP), 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system', 'system'),
-(2, 250.50, 'WITHDRAWAL', 'Retrait ATM', DATEADD('DAY', -15, CURRENT_TIMESTAMP), 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system', 'system'),
-(3, 500.00, 'TRANSFER', 'Transfert vers épargne', DATEADD('DAY', -7, CURRENT_TIMESTAMP), 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system', 'system');
+INSERT INTO transactions (id, reference, amount, type, status, description, from_account_id, to_account_id, timestamp, balance_after, category) 
+VALUES 
+('88888888-8888-8888-8888-888888888888', 'TXN001001', 100.00, 'TRANSFER', 'COMPLETED', 'Virement vers Jane', '44444444-4444-4444-4444-444444444444', '66666666-6666-6666-6666-666666666666', '2024-01-15 10:30:00', 4900.00, 'OTHER'),
+('99999999-9999-9999-9999-999999999999', 'TXN001002', 50.00, 'WITHDRAWAL', 'COMPLETED', 'Retrait DAB', '44444444-4444-4444-4444-444444444444', NULL, '2024-01-16 14:15:00', 4850.00, 'OTHER'),
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'TXN001003', 2000.00, 'DEPOSIT', 'COMPLETED', 'Dépôt de salaire', NULL, '55555555-5555-5555-5555-555555555555', '2024-01-20 09:00:00', 17000.00, 'SALARY'),
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'TXN002001', 75.50, 'PAYMENT', 'COMPLETED', 'Paiement supermarché', '66666666-6666-6666-6666-666666666666', NULL, '2024-01-18 18:45:00', 2924.50, 'FOOD')
+ON CONFLICT (id) DO NOTHING;

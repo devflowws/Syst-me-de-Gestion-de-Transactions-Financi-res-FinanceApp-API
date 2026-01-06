@@ -7,15 +7,16 @@ public class AuthResponse {
     private String token;
     private UserDTO user;
     
-    public AuthResponse(String token2, String string, String id, String email) {
-        //TODO Auto-generated constructor stub
-    }
-
+    // Constructeurs
     public AuthResponse() {
-        //TODO Auto-generated constructor stub
     }
-
-    // Getters et Setters pour AuthResponse
+    
+    public AuthResponse(String token, UserDTO user) {
+        this.token = token;
+        this.user = user;
+    }
+    
+    // Getters et Setters
     public String getToken() {
         return token;
     }
@@ -38,9 +39,14 @@ public class AuthResponse {
         private String email;
         private String firstName;
         private String lastName;
-        private User.Role role;
+        private String role;  // CHANGÉ: String au lieu de User.Role
+        private String status; // AJOUTÉ
         
-        // Getters et Setters pour UserDTO
+        // Constructeur par défaut
+        public UserDTO() {
+        }
+        
+        // Getters et Setters
         public String getId() {
             return id;
         }
@@ -73,37 +79,32 @@ public class AuthResponse {
             this.lastName = lastName;
         }
         
-        public User.Role getRole() {
+        public String getRole() {
             return role;
         }
         
-        public void setRole(User.Role role) {
+        public void setRole(String role) {
             this.role = role;
         }
         
+        public String getStatus() {
+            return status;
+        }
+        
+        public void setStatus(String status) {
+            this.status = status;
+        }
+        
+        // Méthode de conversion
         public static UserDTO fromUser(User user) {
             UserDTO dto = new UserDTO();
             dto.setId(user.getId());
             dto.setEmail(user.getEmail());
             dto.setFirstName(user.getFirstName());
             dto.setLastName(user.getLastName());
-            dto.setRole(user.getRole());
+            dto.setRole(user.getRole().name());      
+            dto.setStatus(user.getStatus().name());  
             return dto;
         }
-    }
-
-    public void setTokenType(String string) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setTokenType'");
-    }
-
-    public void setUserId(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setUserId'");
-    }
-
-    public void setEmail(String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setEmail'");
     }
 }
