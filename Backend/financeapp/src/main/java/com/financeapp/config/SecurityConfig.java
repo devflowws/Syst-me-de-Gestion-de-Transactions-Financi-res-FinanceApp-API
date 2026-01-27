@@ -38,17 +38,26 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-               
+                // PUBLIC ENDPOINTS 
                 .requestMatchers("/auth/**").permitAll()          
                 .requestMatchers("/public/**").permitAll()        
                 .requestMatchers("/test/**").permitAll()          
                 .requestMatchers("/actuator/**").permitAll()      
-                .requestMatchers("/health").permitAll()
-                .requestMatchers("/ping").permitAll()
-                .requestMatchers("/status").permitAll()
-                .requestMatchers("/").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                
+                // SWAGGER/OPENAPI 
+                .requestMatchers(
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/swagger-resources",
+                    "/webjars/**",
+                    "/configuration/ui",
+                    "/configuration/security",
+                    "/favicon.ico"
+                ).permitAll()
+                
+                // Erreurs
                 .requestMatchers("/error").permitAll()
                 
                 // PROTECTED ENDPOINTS - SANS /api !
@@ -57,6 +66,7 @@ public class SecurityConfig {
                 .requestMatchers("/transactions/**").authenticated() 
                 .requestMatchers("/admin/**").hasRole("ADMIN")  
                 
+                // TOUTES les autres requêtes
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> 
@@ -75,7 +85,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
             "http://localhost:3000", 
             "http://localhost:4200",
-            "http://localhost:8081"
+            "http://localhost:8082",
+            "http://localhost:8080"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
